@@ -62,7 +62,7 @@
   1) Create Firebase project
   2) Enable Authentication > Email/Password
   3) Create Firestore Database
-  4) Storage is not required
+  4) Enable Storage
   5) Add a Web App and paste its config below
   6) Create one user in Authentication and give its email admin access
      by putting that email in ADMIN_EMAILS below.
@@ -72,6 +72,8 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut as fbSignOut} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import {getFirestore,collection,addDoc,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import {getStorage,ref,uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+
 const firebaseConfig={
  apiKey:"AIzaSyAXNfl2S1Jtdup_KXEYlrVG82FGkrQw0w0",
  authDomain:"wecommerce-a0b63.firebaseapp.com",
@@ -82,8 +84,8 @@ const firebaseConfig={
 };
 const ADMIN_EMAILS=["hashem.gamal997@gmail.com"];
 
-let fb=null,auth=null,db=null,firebaseReady=false;
-try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
+let fb=null,auth=null,db=null,storage=null,firebaseReady=false;
+try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
 
 const defaults={name:"متجري",logo:"🛍️",hero:"كل اللي تحتاجه في مكان واحد",heroText:"منتجات مميزة وعروض مستمرة وتجربة شراء سهلة."};
 let settings=JSON.parse(localStorage.getItem("shopSettings")||"null")||defaults;
@@ -122,7 +124,7 @@ function updateAuthUI(){let u=window.currentUser;$("authBtn").textContent=u?(isA
 function openAuth(){$("authModal").classList.remove("hidden")}
 function closeAuth(){$("authModal").classList.add("hidden")}
 function toggleAuth(){authMode=authMode==="login"?"register":"login";$("authTitle").textContent=authMode==="login"?"تسجيل الدخول":"إنشاء حساب";document.querySelector("#authModal .primary").textContent=authMode==="login"?"دخول":"إنشاء الحساب"}
-async function authAction(){if(!firebaseReady)return toast("أضف إعدادات Firebase داخل الملف أولًا");let e=$("email").value.trim(),p=$("pass").value;if(!e||!p)return toast("أدخل البريد وكلمة المرور");try{if(authMode==="login")await signInWithEmailAndPassword(auth,e,p);else await createUserWithEmailAndPassword(auth,e,p);closeAuth();toast("تم الدخول بنجاح")}catch(err){toast("تعذر الدخول: "+({auth_invalid_credential:"البريد أو كلمة المرور غير صحيحة",auth_user_not_found:"الحساب غير موجود",auth_wrong_password:"كلمة المرور غير صحيحة",auth_email_already_in_use:"هذا البريد مسجل بالفعل",auth_invalid_email:"البريد الإلكتروني غير صحيح"}[err.code]||err.code))}}
+async function authAction(){if(!firebaseReady)return toast("أضف إعدادات Firebase داخل الملف أولًا");let e=$("email").value.trim(),p=$("pass").value;if(!e||!p)return toast("أدخل البريد وكلمة المرور");try{if(authMode==="login")await signInWithEmailAndPassword(auth,e,p);else await createUserWithEmailAndPassword(auth,e,p);closeAuth();toast("تم الدخول بنجاح")}catch(err){toast("تعذر الدخول: "+err.code)}}
 async function signOut(){if(firebaseReady)await fbSignOut(auth);go("home");toast("تم تسجيل الخروج")}
 function readImage(e){imageFile=e.target.files[0];if(imageFile){let r=new FileReader();r.onload=()=>{$("prev").src=r.result;$("prev").classList.remove("hidden")};r.readAsDataURL(imageFile)}}
 async function uploadImage(){if(!imageFile)return "";if(!firebaseReady)return await new Promise(res=>{let r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(imageFile)});let r=ref(storage,"products/"+Date.now()+"_"+imageFile.name);await uploadBytes(r,imageFile);return await getDownloadURL(r)}
