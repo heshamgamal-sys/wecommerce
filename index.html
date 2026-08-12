@@ -86,7 +86,7 @@ const firebaseConfig = {
 const ADMIN_EMAILS=["hashem.gamal997@gmail.com"];
 
 let fb=null,auth=null,db=null,storage=null,firebaseReady=false;
-try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
+try{if(firebaseConfig.apiKey!==""){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
 
 const defaults={name:"متجري",logo:"🛍️",hero:"كل اللي تحتاجه في مكان واحد",heroText:"منتجات مميزة وعروض مستمرة وتجربة شراء سهلة."};
 let settings=JSON.parse(localStorage.getItem("shopSettings")||"null")||defaults;
