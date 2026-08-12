@@ -62,7 +62,7 @@
   1) Create Firebase project
   2) Enable Authentication > Email/Password
   3) Create Firestore Database
-  4) Enable Storage
+  4) Storage is not required
   5) Add a Web App and paste its config below
   6) Create one user in Authentication and give its email admin access
      by putting that email in ADMIN_EMAILS below.
@@ -72,8 +72,6 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut as fbSignOut} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import {getFirestore,collection,addDoc,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import {getStorage,ref,uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
-
 const firebaseConfig={
  apiKey:"AIzaSyAXNfl2S1Jtdup_KXEYlrVG82FGkrQw0w0",
  authDomain:"wecommerce-a0b63.firebaseapp.com",
@@ -84,8 +82,8 @@ const firebaseConfig={
 };
 const ADMIN_EMAILS=["hashem.gamal997@gmail.com"];
 
-let fb=null,auth=null,db=null,storage=null,firebaseReady=false;
-try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
+let fb=null,auth=null,db=null=null,firebaseReady=false;
+try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
 
 const defaults={name:"متجري",logo:"🛍️",hero:"كل اللي تحتاجه في مكان واحد",heroText:"منتجات مميزة وعروض مستمرة وتجربة شراء سهلة."};
 let settings=JSON.parse(localStorage.getItem("shopSettings")||"null")||defaults;
