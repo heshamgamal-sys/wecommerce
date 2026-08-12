@@ -50,7 +50,7 @@
 </main>
 <footer>© 2026 <span id="footer">متجري</span> — للتواصل: <a id="phoneLink" href="tel:01012995160" style="color:#fff">01012995160</a></footer>
 
-<div id="authModal" class="modal hidden"><div class="modalbox"><button class="close" onclick="closeAuth()">✕</button><h2 id="authTitle">تسجيل الدخول</h2><div class="field"><label>البريد الإلكتروني</label><input id="email"></div><div class="field" style="margin-top:10px"><label>كلمة المرور</label><input id="pass" type="password"></div><button class="btn primary" style="width:100%;margin-top:12px" onclick="authAction()">دخول</button><p style="text-align:center"><button class="btn secondary" onclick="toggleAuth()">إنشاء حساب جديد</button></p><p class="muted">سجّل الدخول باستخدام حسابك.</p></div></div>
+<div id="authModal" class="modal hidden"><div class="modalbox"><button class="close" onclick="closeAuth()">✕</button><h2 id="authTitle">تسجيل الدخول</h2><div class="field"><label>البريد الإلكتروني</label><input id="email"></div><div class="field" style="margin-top:10px"><label>كلمة المرور</label><input id="pass" type="password"></div><button class="btn primary" style="width:100%;margin-top:12px" onclick="authAction()">دخول</button><p style="text-align:center"><button class="btn secondary" onclick="toggleAuth()">إنشاء حساب جديد</button></p><p class="muted">ملاحظة: يجب إعداد Firebase في أسفل الملف أولًا لتفعيل الحسابات.</p></div></div>
 <div id="checkoutModal" class="modal hidden"><div class="modalbox"><button class="close" onclick="closeCheckout()">✕</button><h2>إتمام الطلب</h2><div class="formgrid"><div class="field"><label>الاسم *</label><input id="cn"></div><div class="field"><label>الموبايل *</label><input id="cp"></div><div class="field"><label>المحافظة</label><input id="cg"></div><div class="field"><label>المدينة</label><input id="cc"></div><div class="field full"><label>العنوان *</label><textarea id="ca"></textarea></div><div class="field full"><label>ملاحظات</label><textarea id="cm"></textarea></div><div class="field full"><label>الدفع</label><input value="💵 الدفع عند الاستلام" disabled></div></div><button class="btn primary" style="width:100%;margin-top:12px" onclick="placeOrder()">تأكيد الطلب</button></div></div>
 <div id="productModal" class="modal hidden"><div class="modalbox"><button class="close" onclick="closeProduct()">✕</button><div id="details"></div></div></div>
 <div id="toast" class="toast"></div>
@@ -74,27 +74,14 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmai
 import {getFirestore,collection,addDoc,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import {getStorage,ref,uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAXNfl2S1Jtdup_KXEYlrVG82FGkrQw0w0",
-  authDomain: "wecommerce-a0b63.firebaseapp.com",
-  projectId: "wecommerce-a0b63",
-  storageBucket: "wecommerce-a0b63.firebasestorage.app",
-  messagingSenderId: "323665195953",
-  appId: "1:323665195953:web:e31b9b93f4ec5739578390",
-  measurementId: "G-9YNMYHQGH9"
+const firebaseConfig={
+ apiKey:"PASTE_API_KEY",
+ authDomain:"PASTE_PROJECT.firebaseapp.com",
+ projectId:"PASTE_PROJECT_ID",
+ storageBucket:"PASTE_PROJECT.firebasestorage.app",
+ messagingSenderId:"PASTE_SENDER_ID",
+ appId:"PASTE_APP_ID"
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const ADMIN_EMAILS=["hashem.gamal997@gmail.com"];
 
 let fb=null,auth=null,db=null,storage=null,firebaseReady=false;
