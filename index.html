@@ -84,8 +84,31 @@ const firebaseConfig={
 };
 const ADMIN_EMAILS=["hashem.gamal997@gmail.com"];
 
-let fb=null,auth=null,db=null,storage=null,firebaseReady=false;
-try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
+let fb;
+let auth;
+let db;
+let storage;
+let firebaseReady = false;
+
+try {
+  fb = initializeApp(firebaseConfig);
+  auth = getAuth(fb);
+  db = getFirestore(fb);
+  storage = getStorage(fb);
+
+  firebaseReady = true;
+
+  onAuthStateChanged(auth, (user) => {
+    window.currentUser = user;
+    updateAuthUI();
+  });
+
+  console.log("Firebase Connected Successfully");
+
+} catch (error) {
+  console.error("Firebase Error:", error);
+  firebaseReady = false;
+}
 
 const defaults={name:"متجري",logo:"🛍️",hero:"كل اللي تحتاجه في مكان واحد",heroText:"منتجات مميزة وعروض مستمرة وتجربة شراء سهلة."};
 let settings=JSON.parse(localStorage.getItem("shopSettings")||"null")||defaults;
