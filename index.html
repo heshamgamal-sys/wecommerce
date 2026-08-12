@@ -74,19 +74,18 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmai
 import {getFirestore,collection,addDoc,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import {getStorage,ref,uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAXNfl2S1Jtdup_KXEYlrVG82FGkrQw0w0",
-    authDomain: "wecommerce-a0b63.firebaseapp.com",
-    projectId: "wecommerce-a0b63",
-    storageBucket: "wecommerce-a0b63.firebasestorage.app",
-    messagingSenderId: "323665195953",
-    appId: "1:323665195953:web:e31b9b93f4ec5739578390",
-    measurementId: "G-9YNMYHQGH9"
+const firebaseConfig={
+ apiKey:"PASTE_API_KEY",
+ authDomain:"PASTE_PROJECT.firebaseapp.com",
+ projectId:"PASTE_PROJECT_ID",
+ storageBucket:"PASTE_PROJECT.firebasestorage.app",
+ messagingSenderId:"PASTE_SENDER_ID",
+ appId:"PASTE_APP_ID"
 };
 const ADMIN_EMAILS=["hashem.gamal997@gmail.com"];
 
 let fb=null,auth=null,db=null,storage=null,firebaseReady=false;
-try{if(firebaseConfig.apiKey!==""){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
+try{if(firebaseConfig.apiKey!=="PASTE_API_KEY"){fb=initializeApp(firebaseConfig);auth=getAuth(fb);db=getFirestore(fb);storage=getStorage(fb);firebaseReady=true;onAuthStateChanged(auth,u=>{window.currentUser=u;updateAuthUI();});}}catch(e){console.warn(e)}
 
 const defaults={name:"متجري",logo:"🛍️",hero:"كل اللي تحتاجه في مكان واحد",heroText:"منتجات مميزة وعروض مستمرة وتجربة شراء سهلة."};
 let settings=JSON.parse(localStorage.getItem("shopSettings")||"null")||defaults;
@@ -125,52 +124,8 @@ function updateAuthUI(){let u=window.currentUser;$("authBtn").textContent=u?(isA
 function openAuth(){$("authModal").classList.remove("hidden")}
 function closeAuth(){$("authModal").classList.add("hidden")}
 function toggleAuth(){authMode=authMode==="login"?"register":"login";$("authTitle").textContent=authMode==="login"?"تسجيل الدخول":"إنشاء حساب";document.querySelector("#authModal .primary").textContent=authMode==="login"?"دخول":"إنشاء الحساب"}
-async function authAction(){
-
-    if(!firebaseReady){
-        return toast("Firebase غير متصل");
-    }
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("pass").value;
-
-    if(!email || !password){
-        return toast("أدخل البريد الإلكتروني وكلمة المرور");
-    }
-
-    try{
-
-        if(authMode === "login"){
-
-            await signInWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
-
-        }else{
-
-            await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
-
-        }
-
-        closeAuth();
-
-        toast("تم الدخول بنجاح");
-
-    }catch(error){
-
-        console.error("Login Error:", error);
-
-        toast("تعذر الدخول: " + error.code);
-
-    }
-}
-  async function signOut(){if(firebaseReady)await fbSignOut(auth);go("home");toast("تم تسجيل الخروج")}
+async function authAction(){if(!firebaseReady)return toast("أضف إعدادات Firebase داخل الملف أولًا");let e=$("email").value.trim(),p=$("pass").value;if(!e||!p)return toast("أدخل البريد وكلمة المرور");try{if(authMode==="login")await signInWithEmailAndPassword(auth,e,p);else await createUserWithEmailAndPassword(auth,e,p);closeAuth();toast("تم الدخول بنجاح")}catch(err){toast("تعذر الدخول: "+err.code)}}
+async function signOut(){if(firebaseReady)await fbSignOut(auth);go("home");toast("تم تسجيل الخروج")}
 function readImage(e){imageFile=e.target.files[0];if(imageFile){let r=new FileReader();r.onload=()=>{$("prev").src=r.result;$("prev").classList.remove("hidden")};r.readAsDataURL(imageFile)}}
 async function uploadImage(){if(!imageFile)return "";if(!firebaseReady)return await new Promise(res=>{let r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(imageFile)});let r=ref(storage,"products/"+Date.now()+"_"+imageFile.name);await uploadBytes(r,imageFile);return await getDownloadURL(r)}
 async function saveProduct(){if(!isAdmin())return toast("هذه الصفحة للمدير فقط");let name=$("pn").value.trim(),category=$("pc").value.trim(),price=+$("pp").value,old=+$("po").value||0,stock=+$("ps").value||0,active=$("pa").value==="1",desc=$("pd").value.trim();if(!name||!category||!price)return toast("أكمل البيانات");let image=await uploadImage();let obj={name,category,price,oldPrice:old,stock,active,desc};try{if(firebaseReady){if(editId){await updateDoc(doc(db,"products",editId),{...obj,...(image?{image}: {})})}else{await addDoc(collection(db,"products"),{...obj,image:image||""})}}else{if(editId){let p=products.find(x=>x.id===editId);Object.assign(p,obj);if(image)p.image=image}else products.unshift({id:"p"+Date.now(),...obj,image:image||""});saveLocal()}resetForm();toast("تم حفظ المنتج");loadCloudProducts()}catch(e){console.error(e);toast("تعذر حفظ المنتج")}}
