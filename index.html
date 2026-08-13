@@ -89,6 +89,38 @@ let products = [];
 let cart = JSON.parse(localStorage.getItem("newShopCart") || "[]");
 let orders = [];
 
+  function startFirestore() {
+
+  // المنتجات
+  firebaseOnSnapshot(
+    firebaseCollection(db, "products"),
+    (snapshot) => {
+
+      products = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      render();
+      renderAdmin();
+    }
+  );
+
+  // الطلبات
+  firebaseOnSnapshot(
+    firebaseCollection(db, "orders"),
+    (snapshot) => {
+
+      orders = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      renderAdmin();
+    }
+  );
+}
+
 async function loadProducts(){
   try{
     if(!window.firebaseDB) return render();
