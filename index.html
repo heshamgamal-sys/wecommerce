@@ -85,7 +85,7 @@ const demo=[
 {id:5,n:"كوب حراري",c:"المنزل",p:390,o:500,i:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=800&q=80"},
 {id:6,n:"نظارة شمسية",c:"إكسسوارات",p:480,o:650,i:"https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80"}
 ];
-let products = [];
+let products = [demo];
 let cart = JSON.parse(localStorage.getItem("newShopCart") || "[]");
 let orders = [];
 
@@ -108,18 +108,20 @@ let orders = [];
 
   // الطلبات
   firebaseOnSnapshot(
-    firebaseCollection(db, "orders"),
-    (snapshot) => {
+  firebaseCollection(db, "products"),
+  (snapshot) => {
+    products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-      orders = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      renderAdmin();
-    }
-  );
-}
+    render();
+    renderAdmin();
+  },
+  (error) => {
+    console.error("Firestore Products Error:", error);
+  }
+);
 
 async function loadProducts(){
   try{
