@@ -51,6 +51,30 @@ footer{margin-top:50px;background:#071a35;color:#fff;padding:35px 5%;text-align:
 <a class="contact" href="tel:01012995160">☎</a>
 <footer>متجري © 2026 — الدفع عند الاستلام • 01012995160</footer>
 
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAXNfl2S1Jtdup_KXEYlrVG82FGkrQw0w0",
+  authDomain: "wecommerce-a0b63.firebaseapp.com",
+  projectId: "wecommerce-a0b63",
+  storageBucket: "wecommerce-a0b63.firebasestorage.app",
+  messagingSenderId: "323665195953",
+  appId: "1:323665195953:web:e31b9b93f4ec5739578390",
+  measurementId: "G-9YNMYHQGH9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.firebaseDB = db;
+window.fbAddDoc = addDoc;
+window.fbCollection = collection;
+window.fbGetDocs = getDocs;
+</script>
+
 <script>
 const PASS="150150";
 const demo=[
@@ -61,9 +85,28 @@ const demo=[
 {id:5,n:"كوب حراري",c:"المنزل",p:390,o:500,i:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=800&q=80"},
 {id:6,n:"نظارة شمسية",c:"إكسسوارات",p:480,o:650,i:"https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80"}
 ];
-let products=JSON.parse(localStorage.getItem("newShopProducts")||"null")||demo;
+let products=demo;
 let cart=JSON.parse(localStorage.getItem("newShopCart")||"[]");
+
 let orders=JSON.parse(localStorage.getItem("newShopOrders")||"[]");
+
+async function loadProducts(){
+  try{
+    if(!window.firebaseDB) return render();
+    const snap = await window.fbGetDocs(window.fbCollection(window.firebaseDB,"products"));
+    if(!snap.empty){
+      products = snap.docs.map(d=>({id:d.id,...d.data()}));
+    }
+  }catch(e){ console.log(e); }
+  render();
+}
+
+async function saveProductCloud(obj){
+  if(window.firebaseDB){
+    await window.fbAddDoc(window.fbCollection(window.firebaseDB,"products"),obj);
+  }
+}
+
 function money(n){return Number(n).toLocaleString("ar-EG")+" ج";}
 function save(){localStorage.setItem("newShopProducts",JSON.stringify(products));localStorage.setItem("newShopCart",JSON.stringify(cart));localStorage.setItem("newShopOrders",JSON.stringify(orders));}
 function render(){
@@ -88,9 +131,9 @@ function placeOrder(){let n=cn.value.trim(),p=cp.value.trim(),a=ca.value.trim();
 function showAdmin(){document.getElementById("gate").classList.add("show");setTimeout(()=>pass.focus(),100)}
 function loginAdmin(){if(pass.value===PASS){document.getElementById("gate").classList.remove("show");document.getElementById("shop").style.display="none";document.querySelector(".nav").style.display="none";document.querySelector(".top").style.display="none";document.getElementById("admin").classList.add("show");renderAdmin()}else err.textContent="كلمة المرور غير صحيحة"}
 function showShop(){document.getElementById("admin").classList.remove("show");document.getElementById("shop").style.display="block";document.querySelector(".nav").style.display="block";document.querySelector(".top").style.display="block"}
-function addProduct(){let n=pn.value.trim(),c=pc.value.trim(),p=+pp.value,o=+po.value||0,f=pi.files[0];if(!n||!c||!p)return alert("أكمل بيانات المنتج");let finish=(img)=>{products.unshift({id:Date.now(),n,c,p,o,i:img||"https://via.placeholder.com/600x600?text=Product"});save();render();renderAdmin();alert("تم إضافة المنتج")};if(f){let r=new FileReader();r.onload=()=>{let im=new Image();im.onload=()=>{let max=900,scale=Math.min(1,max/im.width,max/im.height),cv=document.createElement("canvas");cv.width=im.width*scale;cv.height=im.height*scale;cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);finish(cv.toDataURL("image/jpeg",.78))};im.src=r.result};r.readAsDataURL(f)}else finish("")}
+function addProduct(){let n=pn.value.trim(),c=pc.value.trim(),p=+pp.value,o=+po.value||0,f=pi.files[0];if(!n||!c||!p)return alert("أكمل بيانات المنتج");let finish=(img)=>{const obj={n,c,p,o,i:img||"https://via.placeholder.com/600x600?text=Product"};products.unshift({id:Date.now(),...obj});save();render();renderAdmin();saveProductCloud(obj);alert("تم إضافة المنتج")};if(f){let r=new FileReader();r.onload=()=>{let im=new Image();im.onload=()=>{let max=900,scale=Math.min(1,max/im.width,max/im.height),cv=document.createElement("canvas");cv.width=im.width*scale;cv.height=im.height*scale;cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);finish(cv.toDataURL("image/jpeg",.78))};im.src=r.result};r.readAsDataURL(f)}else finish("")}
 function renderAdmin(){statProducts.textContent=products.length;statOrders.textContent=orders.length;statSales.textContent=money(orders.reduce((s,o)=>s+o.total,0));ordersEl.innerHTML=orders.map(o=>`<div class="row"><div><b>${o.id}</b><br>${o.name} — ${o.phone}<br><span class="muted">${o.address}</span></div><strong>${money(o.total)}</strong></div>`).join("")||'<div class="empty">لا توجد طلبات</div>'}
-const ordersEl=document.getElementById("orders");render();
+const ordersEl=document.getElementById("orders");loadProducts();
 </script>
 
 <script>
