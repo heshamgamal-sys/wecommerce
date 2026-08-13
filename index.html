@@ -85,10 +85,9 @@ const demo=[
 {id:5,n:"كوب حراري",c:"المنزل",p:390,o:500,i:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=800&q=80"},
 {id:6,n:"نظارة شمسية",c:"إكسسوارات",p:480,o:650,i:"https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80"}
 ];
-let products=demo;
-let cart=JSON.parse(localStorage.getItem("newShopCart")||"[]");
-
-let orders=JSON.parse(localStorage.getItem("newShopOrders")||"[]");
+let products = [];
+let cart = JSON.parse(localStorage.getItem("newShopCart") || "[]");
+let orders = [];
 
 async function loadProducts(){
   try{
@@ -149,4 +148,40 @@ const ordersEl=document.getElementById("orders");loadProducts();
   window.addEventListener("load",checkSecretRoute);
 })();
 </script>
+  <!-- كود Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  deleteDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAXNfl2S1Jtdup_KXEYlrVG82FGkrQw0w0",
+  authDomain: "wecommerce-a0b63.firebaseapp.com",
+  projectId: "wecommerce-a0b63",
+  storageBucket: "wecommerce-a0b63.firebasestorage.app",
+  messagingSenderId: "323665195953",
+  appId: "1:323665195953:web:e31b9b93f4ec5739578390",
+  measurementId: "G-9YNMYHQGH9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.db = db;
+window.firebaseCollection = collection;
+window.firebaseAddDoc = addDoc;
+window.firebaseOnSnapshot = onSnapshot;
+window.firebaseDoc = doc;
+window.firebaseDeleteDoc = deleteDoc;
+window.firebaseUpdateDoc = updateDoc;
+</script>
+
+</body>
 </body></html>
